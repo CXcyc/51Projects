@@ -24,6 +24,7 @@ bit flag = 0;
 void Delay_ms(unsigned int cnt);
 
 void main(){
+	signed char i = 0;
 	unsigned char led = 0x01;
 	LED0 = 1;
 	LED1 = 1;
@@ -72,9 +73,34 @@ void main(){
 			}
 		}
 		while(flag){
-			P0 = ~led;
-			led = (led << 1) | (led >> 7);
-			Delay_ms(300);
+			for(; i < 7 && flag; i++){
+				led = (led << 1);
+				Delay_ms(300);
+				P0 = ~led;
+				if(KeyIn3 == 0){
+					Delay_ms(10);
+					if(KeyIn3 == 0){
+						while(KeyIn3 == 0){
+							Delay_ms(5);
+						}
+						flag = !flag;
+					}
+				}
+			}
+			for(; i > 0 && flag; i--){
+				led = (led >> 1);
+				Delay_ms(300);
+				P0 = ~led;
+				if(KeyIn3 == 0){
+					Delay_ms(10);
+					if(KeyIn3 == 0){
+						while(KeyIn3 == 0){
+							Delay_ms(5);
+						}
+						flag = !flag;
+					}
+				}
+			}
 			if(KeyIn3 == 0){
 				Delay_ms(10);
 				if(KeyIn3 == 0){
@@ -87,8 +113,6 @@ void main(){
 		}
 	}
 }
-
-
 
 
 void Delay_ms(unsigned int cnt){
