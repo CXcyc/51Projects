@@ -7,7 +7,7 @@ sbit ADDR3 = P1^3;
 
 sbit ENLED = P1^4;
 sbit KeyOut1 = P2^3;
-sbit KeyIn = P3^2;
+sbit KeyIn1 = P2^4;
 
 void delay_ms(unsigned int cnt) reentrant;
 unsigned char code LedChar[] = {
@@ -30,8 +30,6 @@ void main()
     EA = 1;
     ET0 = 1;
     TR0 = 1;
-    EX0 = 1;
-    IT0 = 1;
     while(1)
     {
         dat = count % 10;
@@ -40,31 +38,33 @@ void main()
         ADDR2 = 0;
         P0 = LedChar[dat];
         delay_ms(2);
+        P0 = 0xff;
         dat = count / 10;
         ADDR0 = 1;
         P0 = LedChar[dat];
         delay_ms(2);
-    }
-}
-
-void ExInt0() interrupt 0
-{
-    delay_ms(10);
-    if(KeyIn == 0)
-    {
-        if(run == 1)
+        P0 = 0xff;
+        ADDR0 = 0;
+        if(KeyIn1 == 0)
         {
-            run = 0;
-        }
-        else
-        {
-            if(count == 0)
+            delay_ms(10);
+            if(KeyIn1 == 0)
             {
-                count = 60;
+                if(run == 1)
+                {
+                    run = 0;
+                }
+                else
+                {
+                    if(count == 0)
+                    {
+                        count = 60;
+                    }
+                    run = 1;
+                }
+                while(KeyIn1 == 0);
             }
-            run = 1;
         }
-        while(KeyIn == 0);
     }
 }
 

@@ -1,0 +1,272 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              11/10/2026 20:47:11 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Program Files Free\Keil_4\C51\BIN\C51.EXE User\main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
+                    -D PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          
+   3          sbit ADDR0 = P1^0;
+   4          sbit ADDR1 = P1^1;
+   5          sbit ADDR2 = P1^2;
+   6          sbit ADDR3 = P1^3;
+   7          
+   8          sbit ENLED = P1^4;
+   9          
+  10          void delay_ms(unsigned int t);
+  11          unsigned char KeyScan();
+  12          void Timer0Init();
+  13          
+  14          unsigned char code LedChar[] = {
+  15              0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8,
+  16              0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e
+  17          };
+  18          
+  19          unsigned char code KeyCode[] = {
+  20              0xE7, 0xD7, 0xB7, 0x77,
+  21              0xEB, 0xDB, 0xBB, 0x7B,
+  22              0xED, 0xDD, 0xBD, 0x7D,
+  23              0xEE, 0xDE, 0xBE, 0x7E
+  24          };
+  25          
+  26          unsigned char code KeyNum[] = {
+  27              1,  2,  3,  4,
+  28              5,  6,  7,  8,
+  29              9,  10, 11, 12,
+  30              13, 14, 15, 16
+  31          };
+  32          
+  33          unsigned char code Addr0Tab[] = {1, 0, 1, 0, 1, 0};
+  34          unsigned char code Addr1Tab[] = {0, 0, 1, 1, 0, 0};
+  35          unsigned char code Addr2Tab[] = {1, 1, 0, 0, 0, 0};
+  36          
+  37          unsigned char hour = 12;
+  38          unsigned char minu = 0;
+  39          unsigned char sec  = 0;
+  40          
+  41          unsigned char disp[6] = {0, 0, 0, 0, 0, 0};
+  42          
+  43          unsigned int  ms_cnt   = 0;
+  44          unsigned char scan_i   = 0;
+  45          unsigned char set_mode = 1;
+  46          
+  47          void main()
+  48          {
+  49   1          unsigned char key;
+  50   1      
+  51   1          ADDR3 = 1;
+  52   1          ENLED = 0;
+  53   1      
+  54   1          Timer0Init();
+C51 COMPILER V9.60.7.0   MAIN                                                              11/10/2026 20:47:11 PAGE 2   
+
+  55   1      
+  56   1          while(1)
+  57   1          {
+  58   2              key = KeyScan();
+  59   2      
+  60   2              if(key == 16)
+  61   2              {
+  62   3                  ms_cnt = 0;
+  63   3                  set_mode++;
+  64   3                  if(set_mode > 3)
+  65   3                  {
+  66   4                      set_mode = 1;
+  67   4                  }
+  68   3              }
+  69   2              else if(key == 4)
+  70   2              {
+  71   3                  if(set_mode == 1)
+  72   3                  {
+  73   4                      hour++;
+  74   4                      if(hour >= 24)
+  75   4                      {
+  76   5                          hour = 0;
+  77   5                      }
+  78   4                  }
+  79   3                  else if(set_mode == 2)
+  80   3                  {
+  81   4                      minu++;
+  82   4                      if(minu >= 60)
+  83   4                      {
+  84   5                          minu = 0;
+  85   5                      }
+  86   4                  }
+  87   3                  else if(set_mode == 3)
+  88   3                  {
+  89   4                      sec++;
+  90   4                      if(sec >= 60)
+  91   4                      {
+  92   5                          sec = 0;
+  93   5                      }
+  94   4                      ms_cnt = 0;
+  95   4                  }
+  96   3              }
+  97   2              else if(key == 12)
+  98   2              {
+  99   3                  if(set_mode == 1)
+ 100   3                  {
+ 101   4                      if(hour == 0)
+ 102   4                      {
+ 103   5                          hour = 23;
+ 104   5                      }
+ 105   4                      else
+ 106   4                      {
+ 107   5                          hour--;
+ 108   5                      }
+ 109   4                  }
+ 110   3                  else if(set_mode == 2)
+ 111   3                  {
+ 112   4                      if(minu == 0)
+ 113   4                      {
+ 114   5                          minu = 59;
+ 115   5                      }
+ 116   4                      else
+C51 COMPILER V9.60.7.0   MAIN                                                              11/10/2026 20:47:11 PAGE 3   
+
+ 117   4                      {
+ 118   5                          minu--;
+ 119   5                      }
+ 120   4                  }
+ 121   3                  else if(set_mode == 3)
+ 122   3                  {
+ 123   4                      if(sec == 0)
+ 124   4                      {
+ 125   5                          sec = 59;
+ 126   5                      }
+ 127   4                      else
+ 128   4                      {
+ 129   5                          sec--;
+ 130   5                      }
+ 131   4                      ms_cnt = 0;
+ 132   4                  }
+ 133   3              }
+ 134   2          }
+ 135   1      }
+ 136          
+ 137          void Timer0Init()
+ 138          {
+ 139   1          TMOD = 0x01;
+ 140   1          TH0 = 0xFC;
+ 141   1          TL0 = 0x66;
+ 142   1          ET0 = 1;
+ 143   1          EA = 1;
+ 144   1          TR0 = 1;
+ 145   1      }
+ 146          
+ 147          void Timer0Isr() interrupt 1
+ 148          {
+ 149   1          TH0 = 0xFC;
+ 150   1          TL0 = 0x66;
+ 151   1      
+ 152   1          disp[0] = hour / 10;
+ 153   1          disp[1] = hour % 10;
+ 154   1          disp[2] = minu / 10;
+ 155   1          disp[3] = minu % 10;
+ 156   1          disp[4] = sec / 10;
+ 157   1          disp[5] = sec % 10;
+ 158   1      
+ 159   1          P0 = 0xff;
+ 160   1          ADDR0 = Addr0Tab[scan_i];
+ 161   1          ADDR1 = Addr1Tab[scan_i];
+ 162   1          ADDR2 = Addr2Tab[scan_i];
+ 163   1      
+ 164   1          if(scan_i == 1 || scan_i == 3)
+ 165   1          {
+ 166   2              P0 = LedChar[disp[scan_i]] & 0x7f;
+ 167   2          }
+ 168   1          else
+ 169   1          {
+ 170   2              P0 = LedChar[disp[scan_i]];
+ 171   2          }
+ 172   1      
+ 173   1          scan_i++;
+ 174   1          if(scan_i >= 6)
+ 175   1          {
+ 176   2              scan_i = 0;
+ 177   2          }
+ 178   1      
+C51 COMPILER V9.60.7.0   MAIN                                                              11/10/2026 20:47:11 PAGE 4   
+
+ 179   1          ms_cnt++;
+ 180   1          if(ms_cnt >= 1000)
+ 181   1          {
+ 182   2              ms_cnt = 0;
+ 183   2              sec++;
+ 184   2              if(sec >= 60)
+ 185   2              {
+ 186   3                  sec = 0;
+ 187   3                  minu++;
+ 188   3                  if(minu >= 60)
+ 189   3                  {
+ 190   4                      minu = 0;
+ 191   4                      hour++;
+ 192   4                      if(hour >= 24)
+ 193   4                      {
+ 194   5                          hour = 0;
+ 195   5                      }
+ 196   4                  }
+ 197   3              }
+ 198   2          }
+ 199   1      }
+ 200          
+ 201          unsigned char KeyScan()
+ 202          {
+ 203   1          unsigned char scan1;
+ 204   1          unsigned char scan2;
+ 205   1          unsigned char i;
+ 206   1      
+ 207   1          P2 = 0xf0;
+ 208   1          scan1 = P2;
+ 209   1          if((scan1 & 0xf0) != 0xf0)
+ 210   1          {
+ 211   2              delay_ms(10);
+ 212   2              P2 = 0xf0;
+ 213   2              scan1 = P2;
+ 214   2              if((scan1 & 0xf0) != 0xf0)
+ 215   2              {
+ 216   3                  P2 = 0x0f;
+ 217   3                  scan2 = P2;
+ 218   3                  scan1 = scan1 | scan2;
+ 219   3                  while((P2 & 0x0f) != 0x0f);
+ 220   3                  for(i = 0; i < 16; i++)
+ 221   3                  {
+ 222   4                      if(scan1 == KeyCode[i])
+ 223   4                      {
+ 224   5                          return KeyNum[i];
+ 225   5                      }
+ 226   4                  }
+ 227   3              }
+ 228   2          }
+ 229   1      
+ 230   1          return 0;
+ 231   1      }
+ 232          
+ 233          void delay_ms(unsigned int t)
+ 234          {
+ 235   1          unsigned char i;
+ 236   1          while(t--)
+ 237   1          {
+ 238   2              for(i = 0; i <= 110; i++);
+ 239   2          }
+ 240   1      }
+C51 COMPILER V9.60.7.0   MAIN                                                              11/10/2026 20:47:11 PAGE 5   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    504    ----
+   CONSTANT SIZE    =     66    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

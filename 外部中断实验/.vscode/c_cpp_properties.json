@@ -3,7 +3,7 @@
         {
             "name": "Target 1",
             "includePath": [
-                "D:\\Program Files Free\\Keil_v4\\C51\\INC",
+                "D:\\Program Files Free\\Keil_4\\C51\\INC",
                 "d:\\Documents\\51\\外部中断实验",
                 "d:\\Documents\\51\\外部中断实验\\User"
             ],
