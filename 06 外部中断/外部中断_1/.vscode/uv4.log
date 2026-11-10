@@ -1,0 +1,9 @@
+Build target 'Target 1'
+compiling main.c...
+User\main.c(1): warning C500: LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+User\main.c(37): warning C280: 'dat': unreferenced local variable
+linking...
+Program Size: data=11.0 xdata=0 code=399
+creating hex file from ".\Objects\key"...
+".\Objects\key" - 0 Error(s), 2 Warning(s).
+Build Time Elapsed:  00:00:00

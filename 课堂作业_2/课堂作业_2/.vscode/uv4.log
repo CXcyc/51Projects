@@ -1,0 +1,11 @@
+Build target 'Target 1'
+compiling main.c...
+User\main.c(1): warning C500: LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?CO?MAIN
+
+Program Size: data=10.0 xdata=0 code=297
+creating hex file from ".\Objects\key"...
+".\Objects\key" - 0 Error(s), 2 Warning(s).
+Build Time Elapsed:  00:00:01
