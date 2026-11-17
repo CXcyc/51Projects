@@ -1,64 +1,39 @@
 #include<reg52.h>
 
-sbit ADDR0 = P1^0;
-sbit ADDR1 = P1^1;
-sbit ADDR2 = P1^2;
-sbit ADDR3 = P1^3;
+void delay_ms(unsigned int cnt);
+void send_char(unsigned char dat);
 
-sbit ENLED = P1^4;
-sbit KeyOut1 = P2^3;
-sbit KeyIn = P3^2;
-
-void delay_ms(unsigned int cnt) reentrant;
-unsigned char code LedChar[] = {
-    0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8,
-    0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e
-};
-volatile unsigned char count = 0; 
+unsigned char code str[11] = "hello world";
 
 void main()
 {
-    unsigned char dat;
-    ADDR3 = 1;
-    ENLED = 0;
-    KeyOut1 = 0;      
-    EA = 1;           
-    EX0 = 1;
-    IT0= 1;           
-    while(1)
-    {
-        dat = count % 10; 
-        ADDR0 = 0;
-        ADDR1 = 0;
-        ADDR2 = 0;
-        P0 = LedChar[dat];
-        delay_ms(2);
-        dat = count / 10; 
-        ADDR0 = 1;
-        P0 = LedChar[dat];
-        delay_ms(2);
-    }
+	unsigned char i;
+	SCON = 0x50;
+	PCON = 0x00;
+	TMOD = 0x20;
+	TH1 = 0xFD;
+	TL1 = 0xFD;
+	TR1 = 1;
+	while(1)
+	{
+		for(i=0; i<11; i++)
+		{
+			send_char(str[i]);
+		}
+		delay_ms(1000);
+	}
 }
-
-void ExInt0() interrupt 0    
+void send_char(unsigned char dat)
 {
-    delay_ms(10);
-    if(KeyIn == 0)
-    {
-        count++;             
-        if(count == 100)        
-        {
-            count = 0;
-        }
-        while(KeyIn == 0);
-    }
+	SBUF = dat;
+	while(TI == 0);
+	TI = 0;
 }
-
-void delay_ms(unsigned int cnt) reentrant   
+void delay_ms(unsigned int cnt)
 {
-    unsigned char i;
-    while(cnt--)
-    {
-        for(i=0; i<=110; i++);
-    }
+	unsigned char i;
+	while(cnt--)
+	{
+		for(i=0; i<=110; i++);
+	}
 }

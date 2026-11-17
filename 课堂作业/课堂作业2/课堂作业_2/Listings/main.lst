@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              11/09/2026 14:42:05 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              11/11/2026 09:23:27 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -12,74 +12,39 @@ line level    source
 
    1          #include<reg52.h>
    2          
-   3          sbit ADDR0 = P1^0;
-   4          sbit ADDR1 = P1^1;
-   5          sbit ADDR2 = P1^2;
-   6          sbit ADDR3 = P1^3;
-   7          sbit ENLED = P1^4;
-   8          sbit KeyOut1 = P2^3;
-   9          sbit KeyIn1 = P3^2;
-  10          
-  11          void delay_ms(unsigned int cnt);
-  12          unsigned char code LedChar[] = {
-  13              0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8,
-  14              0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e
-  15          };
-  16          
-  17          unsigned char led_dat = 0x01;
-  18          
-  19          void main()
-  20          {
-  21   1          ADDR3 = 1;
-  22   1          ENLED = 0;
-  23   1          KeyOut1 = 0;
-  24   1      
-  25   1          EA = 1;
-  26   1          EX0 = 1;
-  27   1          IT0 = 1;
-  28   1      
-  29   1          while(1)
-  30   1          {
-  31   2              P0 = ~led_dat;
-  32   2              ADDR0 = 0;
-  33   2              ADDR1 = 1;
-  34   2              ADDR2 = 1;
-  35   2              delay_ms(5);
-  36   2          }
-  37   1      }
-  38          
-  39          void ExInt0() interrupt 0
-  40          {
-  41   1          delay_ms(20);
-  42   1      
-  43   1          if(KeyIn1 == 0)
-  44   1          {
-  45   2              led_dat = led_dat << 1;
-  46   2              if(led_dat == 0x00)
-  47   2              {
-  48   3                  led_dat = 0x01;
-  49   3              }
-  50   2          }
-  51   1      }
-  52          
-  53          void delay_ms(unsigned int cnt)
-C51 COMPILER V9.60.7.0   MAIN                                                              11/09/2026 14:42:05 PAGE 2   
-
-  54          {
-  55   1          unsigned char i;
-  56   1          while(cnt--)
-  57   1          {
-  58   2              for(i=0; i<=110; i++);
-  59   2          }
-  60   1      }
+   3          void send_char(unsigned char dat);
+   4          
+   5          void main()
+   6          {
+   7   1              unsigned char dat;
+   8   1              SCON = 0x50;
+   9   1              PCON = 0x00;
+  10   1              TMOD = 0x20;
+  11   1              TH1 = 0xFD;
+  12   1              TL1 = 0xFD;
+  13   1              TR1 = 1;
+  14   1              while(1)
+  15   1              {
+  16   2                      while(RI == 0);
+  17   2                      RI = 0;
+  18   2                      dat = SBUF;
+  19   2                      send_char(dat);
+  20   2              }
+  21   1      }
+  22          void send_char(unsigned char dat)
+  23          {
+  24   1              SBUF = dat;
+  25   1              while(TI == 0);
+  26   1              TI = 0;
+  27   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    131    ----
-   CONSTANT SIZE    =     16    ----
+   CODE SIZE        =     40    ----
+   CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      1    ----
+   DATA SIZE        =   ----       1
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

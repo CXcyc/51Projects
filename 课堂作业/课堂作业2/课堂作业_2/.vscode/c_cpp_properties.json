@@ -4,8 +4,8 @@
             "name": "Target 1",
             "includePath": [
                 "D:\\Program Files Free\\Keil_v4\\C51\\INC",
-                "d:\\Documents\\51\\课堂作业_2\\课堂作业_2",
-                "d:\\Documents\\51\\课堂作业_2\\课堂作业_2\\User"
+                "d:\\Documents\\51\\课堂作业\\课堂作业2\\课堂作业_2",
+                "d:\\Documents\\51\\课堂作业\\课堂作业2\\课堂作业_2\\User"
             ],
             "defines": [
                 "__C51__",
